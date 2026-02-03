@@ -1,0 +1,45 @@
+name: Bootstrap Laravel Project
+
+on:
+  push:
+    branches: [ dev ]
+
+permissions:
+  contents: write
+
+jobs:
+  create-laravel:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+          extensions: mbstring, bcmath, pdo_mysql
+
+      - name: Install Composer
+        run: |
+          curl -sS https://getcomposer.org/installer | php
+          mv composer.phar /usr/local/bin/composer
+
+      # ✅ Create Laravel inside folder
+      - name: Create Laravel App
+        run: |
+          if [ ! -d "laravel-app" ]; then
+            composer create-project laravel/laravel laravel-app "10.*"
+          fi
+
+      - name: Fix permissions
+        run: chmod -R 777 laravel-app/storage laravel-app/bootstrap/cache
+
+      - name: Commit Laravel project
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git add .
+          git commit -m "Auto bootstrap Laravel project" || echo "Nothing to commit"
+          git push

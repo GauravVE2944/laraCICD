@@ -1,0 +1,47 @@
+name: Laravel
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  laravel-tests:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+          php-version: 8.2
+          extensions: mbstring, bcmath, pdo_mysql
+
+    - name: Install Composer
+      run: |
+          curl -sS https://getcomposer.org/installer | php
+          mv composer.phar /usr/local/bin/composer
+
+    - name: Create Laravel App
+      run: |
+            if [ ! -d "laravel-app" ]; then
+              echo "Creating Laravel project..."
+                composer create-project laravel/laravel laravel-app --prefer-dist
+            else
+              echo  "Laravel already exists"
+            fi
+
+    - name: Commit Laravel Application
+      run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git checkout ${{ github.ref_name }}
+          git add laravel-app
+          git commit -m "Auto bootstrap Laravel project" || echo "No changes to commit"
+          git push origin ${{ github.ref_name }}
+       
