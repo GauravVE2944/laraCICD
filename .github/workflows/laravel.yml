@@ -1,47 +1,41 @@
-name: Laravel APP Setup
+name: Bootstrap Laravel Project
 
 on:
   push:
-    branches: [ dev, main ]
-  pull_request:
+    branches: [ dev ]
 
 permissions:
   contents: write
-  
+
 jobs:
-  setup-laravel:
+  create-laravel:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Get project code
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Install PHP (required for Laravel)
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.2
           extensions: mbstring, bcmath, pdo_mysql
 
-     # 3️⃣ Install Composer globally
       - name: Install Composer
         run: |
           curl -sS https://getcomposer.org/installer | php
           mv composer.phar /usr/local/bin/composer
 
-    # 4️⃣ Create Laravel Project (only if not exists)
+      # ✅ Create Laravel inside folder
       - name: Create Laravel App
-      run: |
+        run: |
           if [ ! -d "laravel-app" ]; then
             composer create-project laravel/laravel laravel-app "10.*"
           fi
-          
-      # 5️⃣ Set permissions
-      - name: Fix permissions
-        run: chmod -R 777 storage bootstrap/cache
 
-      # 6️⃣ Commit generated Laravel files back to repo
+      - name: Fix permissions
+        run: chmod -R 777 laravel-app/storage laravel-app/bootstrap/cache
+
       - name: Commit Laravel project
         run: |
           git config --global user.name "github-actions"
