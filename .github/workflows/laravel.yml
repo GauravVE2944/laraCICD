@@ -5,6 +5,9 @@ on:
     branches: [ dev, main ]
   pull_request:
 
+permissions:
+  contents: write
+  
 jobs:
   setup-laravel:
     runs-on: ubuntu-latest
@@ -29,11 +32,11 @@ jobs:
 
     # 4️⃣ Create Laravel Project (only if not exists)
       - name: Create Laravel App
-        run: |
-          if [ ! -f "composer.json" ]; then
-            composer create-project laravel/laravel . "10.*"
+      run: |
+          if [ ! -d "laravel-app" ]; then
+            composer create-project laravel/laravel laravel-app "10.*"
           fi
-
+          
       # 5️⃣ Set permissions
       - name: Fix permissions
         run: chmod -R 777 storage bootstrap/cache
