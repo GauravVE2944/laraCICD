@@ -21,26 +21,28 @@ jobs:
           php-version: 8.2
           extensions: mbstring, bcmath, pdo_mysql
 
-      # 3️⃣ Install Composer packages
-      - name: Install Composer Dependencies
-        run: composer install --no-progress --prefer-dist --no-interaction
+     # 3️⃣ Install Composer globally
+      - name: Install Composer
+        run: |
+          curl -sS https://getcomposer.org/installer | php
+          mv composer.phar /usr/local/bin/composer
 
-      # 4️⃣ Prepare environment
-      - name: Copy .env file
-        run: cp .env.example .env
+    # 4️⃣ Create Laravel Project (only if not exists)
+      - name: Create Laravel App
+        run: |
+          if [ ! -f "composer.json" ]; then
+            composer create-project laravel/laravel . "10.*"
+          fi
 
-      # 5️⃣ Generate app key
-      - name: Generate App Key
-        run: php artisan key:generate
-
-      # 6️⃣ Give folder permissions (needed for cache/logs)
-      - name: Set Permissions
+      # 5️⃣ Set permissions
+      - name: Fix permissions
         run: chmod -R 777 storage bootstrap/cache
 
-      # 7️⃣ Clear config/cache
-      - name: Clear Laravel Cache
+      # 6️⃣ Commit generated Laravel files back to repo
+      - name: Commit Laravel project
         run: |
-          php artisan config:clear
-          php artisan cache:clear
-          php artisan route:clear
-          php artisan view:clear
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git add .
+          git commit -m "Auto bootstrap Laravel project" || echo "Nothing to commit"
+          git push
