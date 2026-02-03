@@ -16,7 +16,7 @@ jobs:
 
       # 2️⃣ Install PHP (required for Laravel)
       - name: Setup PHP
-        uses: gaurav/setup-php@v2
+        uses: shivammathur/setup-php@v2
         with:
           php-version: 8.2
           extensions: mbstring, bcmath, pdo_mysql
