@@ -14,20 +14,21 @@ jobs:
     steps:
     
     - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
+      uses: actions/checkout@v4
+      
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
           php-version: 8.2
           extensions: mbstring, bcmath, pdo_mysql
 
-      - name: Install Composer
-        run: |
+    - name: Install Composer
+      run: |
           curl -sS https://getcomposer.org/installer | php
           mv composer.phar /usr/local/bin/composer
 
-        - name: Create Laravel App
-                run: |
+    - name: Create Laravel App
+      run: |
                   if [ ! -d "laravel-app" ]; then
                     composer create-project laravel/laravel laravel-app "10.*"
                   fi
