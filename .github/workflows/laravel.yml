@@ -1,0 +1,46 @@
+name: Laravel APP Setup
+
+on:
+  push:
+    branches: [ dev, main ]
+  pull_request:
+
+jobs:
+  setup-laravel:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Get project code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2️⃣ Install PHP (required for Laravel)
+      - name: Setup PHP
+        uses: gaurav/setup-php@v2
+        with:
+          php-version: 8.2
+          extensions: mbstring, bcmath, pdo_mysql
+
+      # 3️⃣ Install Composer packages
+      - name: Install Composer Dependencies
+        run: composer install --no-progress --prefer-dist --no-interaction
+
+      # 4️⃣ Prepare environment
+      - name: Copy .env file
+        run: cp .env.example .env
+
+      # 5️⃣ Generate app key
+      - name: Generate App Key
+        run: php artisan key:generate
+
+      # 6️⃣ Give folder permissions (needed for cache/logs)
+      - name: Set Permissions
+        run: chmod -R 777 storage bootstrap/cache
+
+      # 7️⃣ Clear config/cache
+      - name: Clear Laravel Cache
+        run: |
+          php artisan config:clear
+          php artisan cache:clear
+          php artisan route:clear
+          php artisan view:clear
