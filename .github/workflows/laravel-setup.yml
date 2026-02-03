@@ -29,6 +29,9 @@ jobs:
 
     - name: Create Laravel App
       run: |
-                  if [ ! -d "laravel-app" ]; then
-                    composer create-project laravel/laravel laravel-app "10.*"
-                  fi
+            if [ ! -d "laravel-app" ]; then
+              echo "Creating Laravel project..."
+                composer create-project laravel/laravel laravel-app --prefer-dist
+            else
+              echo  "Laravel already exists"
+            fi
