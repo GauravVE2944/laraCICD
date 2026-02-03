@@ -25,6 +25,14 @@ jobs:
         run: |
           curl -sS https://getcomposer.org/installer | php
           mv composer.phar /usr/local/bin/composer
+
+        - name: Create Laravel App
+                run: |
+                  if [ ! -d "laravel-app" ]; then
+                    composer create-project laravel/laravel laravel-app "10.*"
+                  fi
+
+      
     - name: Directory Permissions
       run: chmod -R 777 storage bootstrap/cache
     - name: Create Database
